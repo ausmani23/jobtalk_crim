@@ -1,0 +1,956 @@
+%preamble goes here
+%parameters for beamer
+\documentclass{beamer}
+%\documentclass[svgnames,smaller]{beamer}
+\usetheme{Rochester}
+%\useoutertheme[subsection=false,footline=title]{miniframes}
+\usecolortheme{fly}
+
+%packages et al.
+\usepackage[
+    backend=bibtex,
+    natbib=true,
+    style=authoryear,
+    url=false,
+    doi=false,
+    isbn=false,
+]{biblatex}
+\addbibresource{bibliography.bib}
+
+%nice tables
+\usepackage{booktabs}
+
+%multiline
+\usepackage{amsmath}
+
+%appendix
+\usepackage{appendix}
+\usepackage{appendixnumberbeamer}
+
+%titles et al
+\title{The Origins of Mass Incarceration}
+
+%author, affil
+\author{Adaner Usmani}
+\institute[Brown]
+{
+ Postdoctoral Fellow \\
+ Watson Institute \\
+ Brown University
+}
+
+%date
+\date{November 2018}
+
+%this makes it dark background, white text
+\setbeamercovered{transparent} %this toggles on faded lists, w/ +/- command
+\setbeamercolor{normal text}{fg=white,bg=black} %this is main text color
+
+%this adds navigation symbols to the presentation
+\addtobeamertemplate{navigation symbols}{}{%
+    \usebeamerfont{footline}%
+    \usebeamercolor[fg]{footline}% can be structure, if white
+    \hspace{3em}%
+    \insertframenumber/\inserttotalframenumber
+}
+
+%other formatting options
+%(go through and add descriptions}
+\setbeamercolor{item}{fg=red!50!yellow, bg=black} %items are orange
+\setbeamercolor{structure}{fg=white}
+\setbeamercolor{alerted text}{fg=red!50!yellow!} %alerted text is orange
+\setbeamercolor{item projected}{use=item,fg=black,bg=item.fg!35}
+\setbeamercolor*{palette primary}{use=structure,fg=structure.fg!95!black}
+\setbeamercolor*{palette secondary}{use=structure,fg=structure.fg!95!black}
+\setbeamercolor*{palette tertiary}{use=structure,fg=structure.fg!90!black}
+\setbeamercolor*{palette quaternary}{use=structure,fg=structure.fg!95!black,bg=black!80}
+\setbeamercolor*{framesubtitle}{fg=white}
+\setbeamercolor*{block title}{parent=structure,bg=black!60}
+\setbeamercolor*{block body}{fg=black,bg=black!10}
+\setbeamercolor*{block title alerted}{parent=alerted text,bg=black!15}
+\setbeamercolor*{block title example}{parent=example text,bg=black!15}
+
+%for toc
+\setbeamercolor{section number projected}{bg=black,fg=white}
+\setbeamertemplate{sections/subsections in toc}[sections numbered]
+\setbeamercolor{section in toc}{fg=white}
+\setbeamerfont{subsection in toc}{size=\small}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%define the claims as commands, which will make consistency easier
+\newcommand{\claimone}{Due to the Civil Rights Movement, black Americans made gains}
+\newcommand{\claimtwo}{Due to black gains, white Americans grew anxious}
+\newcommand{\claimthree}{These racial anxieties led white Americans to fear crime}
+\newcommand{\claimfour}{To exploit this fear of crime, white politicians proposed punitive policies}
+\newcommand{\claimfive}{Due to white politicians' support of punitive policy, the rate of incarceration and policing increased}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%longitudinal puzzle
+\section{The Puzzle}
+
+\begin{frame}{}
+\begin{center}
+    \includegraphics[height=0.9\textheight,keepaspectratio]{fig_inmates_preturn.pdf}
+\end{center}
+\end{frame}
+
+\begin{frame}{}
+\begin{center}
+   \includegraphics[height=0.9\textheight,keepaspectratio]{fig_inmates_punturn.pdf} 
+\end{center}
+\end{frame}
+
+\begin{frame}{}
+\begin{center}
+    {\Large Why the punitive turn?}
+\end{center}
+\end{frame}
+
+\begin{frame}{An Influential View}
+\begin{itemize}
+\item[] ``Law-and-order campaign appeals combined with a covert emphasis on the links between race and street crime used to overcome Republican electoral disadvantages seem to provide \alert{the most plausible explanations} for the rapid increase in U.S. imprisonment rates...''
+\item[] {\footnotesize Jacobs and Jackson, "...A Review of Systematic Findings" (2010)}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{An Influential View}
+\includegraphics[width=\textwidth,keepaspectratio]{fig_citerate.pdf}
+\end{frame}
+
+\begin{frame}{The Assertion}
+\includegraphics[width=\textwidth,keepaspectratio]{fig_vp_spurious.png}
+\end{frame}
+
+\begin{frame}{Homicides Rose}
+\includegraphics[width=\textwidth,keepaspectratio]{fig_crimerise1.pdf}
+\end{frame}
+
+\begin{frame}{Violence Rose}
+\includegraphics[width=\textwidth,keepaspectratio]{fig_crimerise2.pdf}
+\end{frame}
+
+\begin{frame}{Crime Rose}
+\includegraphics[width=\textwidth,keepaspectratio]{fig_crimerise3.pdf}
+\end{frame}
+
+\begin{frame}{Most Are Not Drug Offenders}
+\begin{center}
+    \includegraphics[width=3in,keepaspectratio]{fig_drugpriz.png}
+\end{center}
+\end{frame}
+
+\begin{frame}{Fewer Are Low-Level Drug Offenders}
+\begin{center}
+    \includegraphics[width=3in,keepaspectratio]{fig_lldrugpriz.png}
+\end{center}
+\end{frame}
+
+\begin{frame}{}
+\begin{itemize}
+    \item[] ``To omit violence from the analysis was to misunderstand the social inequality on which mass incarceration rests.'' \\
+    \item[] Bruce Western, \textit{Homeward} (2018)
+\end{itemize}
+\end{frame}
+
+\begin{frame}{\textbf{Not} The Argument}
+\includegraphics[width=\textwidth,keepaspectratio]{fig_vp_naive.png}
+\end{frame}
+
+\begin{frame}{The Developing View}
+\includegraphics[width=\textwidth,keepaspectratio]{fig_vp_moderated_empty.png}
+\end{frame}
+
+\begin{frame}{My Argument}
+\includegraphics[width=\textwidth,keepaspectratio]{fig_vp_moderated_sd.png}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Roadmap}
+    \tableofcontents
+\end{frame}
+
+%from here on, show TOC
+\AtBeginSection[]
+{
+  \begin{frame}
+    \frametitle{Roadmap}
+    \tableofcontents[currentsection]
+  \end{frame}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{The Influential View}
+
+\begin{frame}{Five Claims} \pause
+\begin{itemize}[<+->]
+    \item[1.] \claimone
+    \item[2.] \claimtwo
+    \item[3.] \claimthree
+    \item[4.] \claimfour
+    \item[5.] \claimfive
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Five Claims}
+\begin{itemize}
+    \item[1.] \claimone
+    \item[2.] \claimtwo
+    \alert{\item[3.] \claimthree
+    \item[4.] \claimfour
+    \item[5.] \claimfive}
+\end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{New Evidence}
+
+\newcommand{\claimthreeq}{Why did public opinion change?}
+\newcommand{\claimfourq}{Why did politicians turn punitive?}
+\newcommand{\claimfiveq}{Why did prisons and police grow?}
+
+\subsection{\claimthreeq}
+
+\begin{frame}{}
+\begin{center}
+    {\Large \claimthreeq}
+\end{center}
+\end{frame}
+
+\begin{frame}{\claimthreeq} 
+\begin{itemize}[<+->]
+    \item[] \alert{Data:} 300,000 respondents to 39 different questions over 176 different public opinion surveys about crime and punishment, 1955-2014
+    \item[] \alert{Method:} 
+    \begin{itemize}
+        \item Summarize levels and white-black gap
+        \item Estimate trends by race, 1955-2014
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{\claimthreeq} 
+\begin{itemize}
+    \item[] \alert{Data:} 300,000 respondents to 39 different questions over 176 different public opinion surveys about crime and punishment, 1955-2014
+    \item[] \alert{Method:} 
+    \begin{itemize}
+        \item Summarize levels and white-black gap
+        \item \alert{Estimate trends by race, 1955-2014}
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Two Dimensions}
+\begin{itemize}
+    \item[] \alert{Punitiveness, e.g.}
+    \begin{itemize}
+        \item In general, do you think the courts in this area deal too harshly or not harshly enough with criminals? 
+        \item Do you favor or oppose the death penalty for persons convicted of murder?
+    \end{itemize}
+    \item[] \alert{Anxiety, e.g.}
+        \begin{itemize}
+        \item ...I'd like you to tell me whether you think we're spending too much money, too little money, or about the right amount on halting the rising crime rate. 
+        \item Is being a victim of crime something you personally worry about?
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{The Model} 
+\begin{itemize}
+    \item[] \alert{Challenge:} Different questions in different years
+    \item[] \alert{Solution:} Multilevel models with (raceX)question-level random effects
+\end{itemize}
+\end{frame}
+
+\begin{frame}{As if Nonprobability Sampling} 
+\begin{itemize}
+    \item[] \alert{Challenge:} Sample weights are difficult to harmonize
+    \item[] \alert{Solution:} Predictions for $sex \times race \times ed \times age \times year$ cells, weighted by share of population in year $t$ to obtain representative estimate
+\end{itemize}
+\end{frame}
+
+\begin{frame}{\claimthreeq}
+\begin{center}
+    \includegraphics[height=0.9\textheight,keepaspectratio]{fig_trends_pun_influential.pdf}
+\end{center}
+\end{frame}
+
+\begin{frame}{\claimthreeq}
+\begin{center}
+    \includegraphics[height=0.9\textheight,keepaspectratio]{fig_trends_anx_influential.pdf}
+\end{center}
+\end{frame}
+
+\begin{frame}{\claimthreeq}
+\begin{center}
+    \includegraphics[height=0.9\textheight,keepaspectratio]{fig_trends_pun_actual.pdf}
+\end{center}
+\end{frame}
+
+\begin{frame}{\claimthreeq}
+\begin{center}
+    \includegraphics[height=0.9\textheight,keepaspectratio]{fig_trends_anx_actual.pdf}
+\end{center}
+\end{frame}
+
+\begin{frame}{Is \textit{white} punitiveness driven by revanchism?} 
+\begin{center}
+    \includegraphics[height=0.9\textheight,keepaspectratio]{fig_white.pdf}
+\end{center}
+\end{frame}
+
+\begin{frame}{Is \textit{white} punitiveness driven by revanchism?} 
+\begin{center}
+    \includegraphics[height=0.9\textheight,keepaspectratio]{fig_whiteblack.pdf}
+\end{center}
+\end{frame}
+
+\begin{frame}{Is \textit{white} punitiveness driven by revanchism?} 
+\begin{center}
+    \includegraphics[height=0.9\textheight,keepaspectratio]{fig_whiteblackprotest.pdf}
+\end{center}
+\end{frame}
+
+\begin{frame}{Is \textit{white} punitiveness driven by revanchism?} 
+\begin{center}
+    \includegraphics[height=0.9\textheight,keepaspectratio]{fig_whiteblackcrime.pdf}
+\end{center}
+\end{frame}
+
+\begin{frame}{}
+\begin{center}
+    {\Large \claimfourq}
+\end{center}
+\end{frame}
+
+\subsection{\claimfourq}
+\begin{frame}{\claimfourq}
+\begin{itemize}[<+->]
+    \item[] \alert{Data:} Roll call data from the House of Representatives, 30 punitive bills, 1968-2015
+    \item[] \alert{Method:} 
+    \begin{itemize}
+        \item Summarize level and white-black gap for each punitive bill
+        \item Summarize trends in punitive voting, 1968-2015
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{\claimfourq}
+\begin{itemize}
+    \item[] \alert{Data:} Roll call data from the House of Representatives, 30 punitive bills, 1968-2015
+    \item[] \alert{Method:} 
+    \begin{itemize}
+        \item Summarize level and white-black gap for each punitive bill
+        \item \alert{Summarize trends in punitive voting, 1968-2015}
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{\claimfourq}
+\begin{center}
+    \includegraphics[height=0.9\textheight,keepaspectratio]{fig_vtrends_influential_view.pdf}
+\end{center}
+\end{frame}
+
+\begin{frame}{\claimfourq}
+\begin{center}
+    \includegraphics[height=0.9\textheight,keepaspectratio]{fig_vtrends_estimated.pdf}
+\end{center}
+\end{frame}
+
+\begin{frame}{Was this representation or selling-out?}
+\begin{itemize}[<+->]
+    \item[] \alert{Why support Clinton's 1994 Crime Bill?}
+    \begin{itemize}
+        \item 63\% of African Americans supported, only 20\% opposed
+        \item Many objections, but``[t]he crime bill's promise of more police, more prisons and more money for crime prevention was too important to jeopardize by holding out for the racial-justice provision.'' (Alan Wheat, D-MO)
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{}
+\begin{center}
+    {\Large \claimfiveq}
+\end{center}
+\end{frame}
+
+\subsection{\claimfiveq}
+\begin{frame}{\claimfiveq}
+\begin{itemize}[<+->]
+    \item[] \alert{Data:} Records of black political representation from Joint Center for Political and Economic Studies
+    \item[] \alert{Method:}
+    \begin{itemize}
+        \item Exploit redistricting after 1990 census to estimate impact on incarceration and policing, 1986-1996
+        \item Within-state correlations between black political representation and incarceration/policing, 1970-2010
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{\claimfiveq}
+\begin{itemize}
+    %\item[] \alert{Claim:} \claimfive
+    \item[] \alert{Data:} Records of black political representation from Joint Center for Political and Economic Studies
+    \item[] \alert{Method:}
+    \begin{itemize}
+        \item \alert{Exploit redistricting after 1990 census to estimate impact on incarceration and policing, 1986-1996}
+        \item Within-state correlations between black political representation and incarceration/policing, 1970-2010
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{A Natural Experiment} 
+\begin{center}
+    \includegraphics[height=0.9\textheight,keepaspectratio]{fig_beodd.pdf}
+\end{center}
+\end{frame}
+
+\begin{frame}{\claimfiveq}
+\begin{center}
+    \includegraphics[width=\textwidth,keepaspectratio]{fig_panelest_influential_view.pdf}
+\end{center}
+\end{frame}
+
+\begin{frame}{\claimfiveq}
+\begin{center}
+    \includegraphics[width=\textwidth,keepaspectratio]{fig_panelest_estimated_redistricting.pdf}
+\end{center}
+\end{frame}
+
+\begin{frame}{Was this just racial threat?}
+\begin{center}
+    \includegraphics[width=\textwidth,keepaspectratio]{fig_ddwelfare_rathreat.pdf}
+\end{center}
+\end{frame}
+
+\begin{frame}{Was this just racial threat?}
+\begin{center}
+    \includegraphics[width=\textwidth,keepaspectratio]{fig_ddwelfare.pdf}
+\end{center}
+\end{frame}
+
+\subsection{Interpretation}
+
+\begin{frame}{The Influential Account}
+\begin{itemize}
+    \item[3.] \claimthree
+    \item[4.] \claimfour
+    \item[5.] \claimfive
+\end{itemize}
+\end{frame}
+
+\begin{frame}{My Account}
+\begin{itemize}
+    \item[3.]<+> The rise in violence drove the rise in public punitiveness
+    \item[4.]<+> As a result, politicians supported punitive policies in greater numbers
+    \item[5.]<+> White \textit{and} black elected officials were responsible for the increase in the rate of incarceration and policing
+\end{itemize}
+\end{frame}
+
+\begin{frame}{My Interpretation}
+\begin{center}
+    {\Large The rise in violence mattered.}
+\end{center}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Refining the Question}
+
+\begin{frame}{}
+\begin{center}
+    {\Large Why the punitive turn?}
+\end{center}
+\end{frame}
+
+\begin{frame}{Penal Policy}
+\begin{center}
+    \includegraphics[width=\textwidth,keepaspectratio]{fig_unidimensional_empty.png}
+\end{center}
+\end{frame}
+
+\begin{frame}{What Is To Be Done?}
+\begin{itemize}
+\item[] ``The ecological concentration of ghetto poverty, racial segregation, residential mobility and population turnover, family disruption, and... local social organization... are fruitful areas of future inquiry... \alert{Our framework suggests the need to take a renewed look at social policies that focus on prevention.} We do not need more after-the-fact (reactive) approaches.''
+\item[] Sampson and Wilson, ``Towards a Theory of Race, Crime, and Urban Inequality'' (1995)
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Penal Policy \textit{and} Social Policy}
+\begin{center}
+    \includegraphics[width=\textwidth,keepaspectratio]{fig_bidimensional_empty.png}
+\end{center}
+\end{frame}
+
+\begin{frame}{Four Quadrants}
+\begin{center}
+    \includegraphics[width=\textwidth,keepaspectratio]{fig_bidimensional_quadrants.png}
+\end{center}
+\end{frame}
+
+\begin{frame}{Why Quadrant III?}
+\begin{center}
+    \includegraphics[width=\textwidth,keepaspectratio]{fig_bidimensional_quadrants_q3.png}
+\end{center}
+\end{frame}
+
+\begin{frame}{}
+\begin{center}
+    {\Large Why the punitive turn?}
+\end{center}
+\end{frame}
+
+\begin{frame}{}
+\begin{center}
+    {\Large \alert{Why did America fight violence with penal policy?}}
+\end{center}
+\end{frame}
+
+\begin{frame}{Penal Policy vs. Social Policy}
+    \includegraphics[width=\textwidth,keepaspectratio]{fig_penalvssocial1.png}
+\end{frame}
+
+\begin{frame}{Penal Policy vs. Social Policy}
+    \includegraphics[width=\textwidth,keepaspectratio]{fig_penalvssocial2.png}
+\end{frame}
+
+\begin{frame}{Penal Policy vs. Social Policy}
+    \includegraphics[width=\textwidth,keepaspectratio]{fig_penalvssocial4.png}
+\end{frame}
+
+\begin{frame}{Cost of Quadrant III}
+\begin{center}
+    \includegraphics[width=\textwidth,keepaspectratio]{fig_bidimensional_quadrants_priced_q3.png}
+\end{center}
+\end{frame}
+
+\begin{frame}{Abolition vs. Punitiveness}
+\begin{center}
+    \includegraphics[width=\textwidth,keepaspectratio]{fig_bidimensional_quadrants_priced_abolition.png}
+\end{center}
+\end{frame}
+
+\begin{frame}{Laissez-Faire vs. Root Causes}
+\begin{center}
+    \includegraphics[width=\textwidth,keepaspectratio]{fig_bidimensional_quadrants_priced_rootcauses.png}
+\end{center}
+\end{frame}
+
+\begin{frame}{Cost in Four Quadrants}
+\begin{center}
+    \includegraphics[width=\textwidth,keepaspectratio]{fig_bidimensional_quadrants_priced_allqs.png}
+\end{center}
+\end{frame}
+
+\begin{frame}{}
+\begin{center}
+    {\Large Why did America fight violence with penal policy?}
+\end{center}
+\end{frame}
+
+\begin{frame}{}
+\begin{center}
+    {\Large \alert{Why did America fight violence on the cheap?}}
+\end{center}
+\end{frame}
+
+\begin{frame}{Some Deductions}
+\begin{itemize}
+    \item[1.] The state requires economic resources
+    \item[2.] Because the rich have greater capacities to disrupt the economy, they have greater leverage over the state
+    \item[3.] But the poor sometimes gain capacities to disrupt, and so they gain leverage over the state
+    \item[4.] As the poor gain leverage, redistribution from rich to poor becomes more likely
+\end{itemize}
+\begin{flushright}
+{\scriptsize ``Democracy and the Class Struggle'', \textit{American Journal of Sociology}, 124(3):1-41}
+\end{flushright}
+\end{frame}
+
+\begin{frame}{A Conclusion}
+\begin{center}
+    {\Large Redistribution = \alert{f(Balance of Disruptive Capacities)}}
+\end{center}
+%\begin{flushright}
+%{\scriptsize ``Democracy and the Class Struggle'', \textit{American Journal of Sociology}, 124(3):1-41}
+%\end{flushright}
+\end{frame}
+
+\begin{frame}{}
+\begin{itemize}
+    \item[] ``Those who against the public weal have power cannot be expected to yield save to superior power.'' \\
+    \item[] W.E.B Du Bois, \textit{Black Reconstruction} (1935)
+\end{itemize}
+\end{frame}
+
+\begin{frame}{}
+\begin{center}
+    {\Large Why did America fight violence on the cheap?}
+\end{center}
+\end{frame}
+
+\begin{frame}{A Hypothesis}
+\begin{center}
+    {\Large \alert{The poor lacked the capacity to win social policy.}}
+\end{center}
+\end{frame}
+
+\begin{frame}{Longstanding}
+\begin{itemize}[<+->]
+    \item[] \alert{Balance of capacities is unfavorable}
+        \begin{itemize}
+            \item A working-class divided by race
+            \item Institutions that enable elite veto
+            \item[] (\textit{And behind both, slavery..)}
+        \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Conjunctural}
+\begin{itemize}[<+->]
+    \item[] \alert{Capacities of the powerless declined}
+    \begin{itemize}
+        \item[] The Civil Rights movement faded, the labor movement ossified
+    \end{itemize}
+    \item[] \alert{Leverage of the powerful increased}
+    \begin{itemize}
+        \item[] The economy sputtered, Vietnam drained the Federal budget
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{In Sum}
+
+\begin{frame}{The Influential View}
+\includegraphics[width=\textwidth,keepaspectratio]{fig_vp_spurious.png}
+\end{frame}
+
+\begin{frame}{The Developing View}
+\begin{center}
+        \includegraphics[width=\textwidth,keepaspectratio]{fig_vp_moderated_empty.png}
+\end{center}
+\end{frame}
+
+\begin{frame}{A Tale of Two Exceptions}
+\begin{center}
+        \includegraphics[width=\textwidth,keepaspectratio]{fig_vp_moderated_sd.png}
+\end{center}
+\end{frame}
+
+\begin{frame}{A Tale of Two Exceptions}
+\begin{center}
+        \includegraphics[width=\textwidth,keepaspectratio]{fig_vp_confounded.png}
+\end{center}
+\end{frame}
+
+%A research agenda?
+\begin{frame}{A Research Agenda in Six Claims}
+    \begin{itemize}
+        \item[] \alert{Punitiveness}
+        \begin{itemize}
+        \item[1.] Risk of Victimization $\rightarrow$ Public Punitiveness(/Anxiety)
+        \item[2.] Public Punitiveness $\rightarrow$ Punitiveness of Politicians
+        \end{itemize}
+        \item[] \alert{Policy}
+        \begin{itemize}
+        \item[3.] Balance of Power $\rightarrow$ More Social Policy
+        \item[4.] More Social Policy $\rightarrow$ Less Penal Policy
+        \end{itemize}
+        \item[] \alert{Outcomes}
+        \begin{itemize}
+        \item[5.] More Social Policy $\rightarrow$ Less Violence
+        \item[6.] Mass Incarceration $\rightarrow$ Macrosociological Outcomes
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Ideas}
+    \begin{itemize}
+        \item[1.] ML models estimating risk of victimization using $sex \times race \times ed \times age \times year$ info, enter as predictor in $p(anxiety|punitive|mistrustful)$
+        \item[1.,2.] Survey experiments to prime respondents to risk of victimization, some given social policy options
+        \item[3.] Analysis of utterances in Congress to place legislators on penal/social 2x2
+        \item[3.] Bartik-like instruments for labor capacity using industry-level growth rates and county $\times$ industry employment shares
+        \item[4., 5.] Trade shocks to labor markets, to simulate `as if' social policy
+        \item[6.] Bartik-like instruments for growth in incarceration using $sex \times race \times ed \times age \times year$ institutionalization rates and county-level demographic shares
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{}
+\begin{center}
+    {\Large adaner\_usmani@brown.edu} \\
+    {\large http://bit.ly/au\_jobtalkrepo}
+\end{center}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\appendix
+
+\begin{frame}{}
+\begin{center}
+    {\Large Appendix}
+\end{center}
+\end{frame}
+
+\begin{frame}{Crime and Punishment, Stock}
+\includegraphics[width=\textwidth,keepaspectratio]{fig_crimepun.pdf}
+\end{frame}
+
+\begin{frame}{Crime and Punishment, Flow}
+\includegraphics[width=\textwidth,keepaspectratio]{fig_crimeDpun.pdf}
+\end{frame}
+
+\begin{frame}{Admissions Per Crime}
+\begin{center}
+    \includegraphics[width=\textwidth,keepaspectratio]{fig_admissionspercrime.pdf}
+\end{center}
+\end{frame}
+
+\begin{frame}{The Influential View?}
+\includegraphics[width=\textwidth,keepaspectratio]{fig_vp_moderated_racism.png}
+\end{frame}
+
+\begin{frame}{The Developing View}
+\begin{itemize}
+    \item Racism \parencite{FormanJr2017}
+    \item Culture, Legal History \parencite{Whitman2005,Garland2010}
+    \item Media \parencite{Enns2016}
+    \item Democracy in CJ \parencite{Savelsberg1994,Lacey2008,Garland2010,Lacey2015}
+    \item Discretion in CJ \parencite{Pfaff2017}
+    \item Federalism \parencite{Miller2008,Miller2016}
+    \item Liberal Market Economy \parencite{Lacey2015,Garland2018}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Racial Threat}
+\begin{itemize}
+    \item[1.] \claimone
+    \item[2.] \alert{Due to black gains,} \textcolor{black!80}{white Americans grew anxious
+    \item[3.] \claimthree
+    \item[4.] \claimfour
+    \item[5.] Due to white politicians' support of punitive policy,} \alert{the rate of incarceration and policing increased}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Evidence via Racial Threat}
+\begin{itemize}
+\item[2-5.] Due to Af-Am gains, ... the rate of incarceration and policing increased
+\begin{itemize}
+    \item \%black correlated with punitive outcomes across and within cities/states
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Evidence for Claim 3}
+\begin{itemize}
+    \item[3.] \claimthree
+    \begin{itemize}
+        \item Over-time: The rise in punitiveness is correlated with the success of the Civil Rights movement
+        \item Cross-individual: More racially-anxious people are more punitive
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Evidence for Claim 4}
+\begin{itemize}
+    \item[4.] \claimfour
+        \begin{itemize}
+        \item Over-time: The dawn of punitive policy is correlated with the rise of punitive opinion
+        \item Cross-politician: Those closest to the abandoned white voter are also the most punitive
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Evidence for Claim 5}
+\begin{itemize}
+    \item[5.] \claimfive
+    \begin{itemize}
+        \item Over-time, national-level: Richard Nixon and Ronald Reagan played a leading role
+        \item Cross-state/over-time, state-level: More Republican, more incarceration
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Decomposition, Incarceration Rate}
+Incarceration Rate = \\
+Behavior \times \\ 
+p(Crime$\mid$Behavior) \times \\ 
+p(Arrest$\mid$Crime) \times \\ 
+p(Charge$\mid$Arrest) \times \\ 
+p(Conviction$\mid$Charge) \times \\ 
+E(Time Served)
+\end{frame}
+
+\begin{frame}{Decomposition, Influential View}
+Incarceration Rate = \\
+Behavior \times \\ 
+\alert{p(Crime$|$Behavior) \times \\ 
+p(Arrest$|$Crime) \times \\ 
+p(Charge$|$Arrest) \times \\ 
+p(Conviction$|$Charge) \times \\ 
+E(Time Served)}
+\end{frame}
+
+\begin{frame}{Correlates of Public Opinion}
+\begin{center}
+    \includegraphics[height=0.9\textheight,keepaspectratio]{fig_violencecorrs.pdf}
+\end{center}
+\end{frame}
+
+\begin{frame}{Trends by Race, Subtrends Model}
+\begin{center}
+    \includegraphics[width=\textwidth,keepaspectratio]{fig_trends_exp.pdf}
+\end{center}
+\end{frame}
+
+\begin{frame}{White Southerners vs. White Non-Southerners, Punitiveness}
+\begin{center}
+    \includegraphics[height=0.9\textheight,keepaspectratio]{fig_trends_whitesouth_p(punitive).pdf}
+\end{center}
+\end{frame}
+
+\begin{frame}{White Southerners vs. White Non-Southerners, Anxiety}
+\begin{center}
+    \includegraphics[height=0.9\textheight,keepaspectratio]{fig_trends_whitesouth_p(anxiety).pdf}
+\end{center}
+\end{frame}
+
+\begin{frame}{Is black punitiveness driven by elites?}
+\begin{center}
+    \includegraphics[height=0.9\textheight,keepaspectratio]{fig_trends_blacked_p(punitive).pdf}
+\end{center}
+\end{frame}
+
+\begin{frame}{Is black anxiety driven by elites?}
+\begin{center}
+    \includegraphics[height=0.9\textheight,keepaspectratio]{fig_trends_blacked_p(anxiety).pdf}
+\end{center}
+\end{frame}
+
+%public opinion model
+\begin{frame}{Public Opinion Model, Standard}
+\begin{equation*}
+\label{standard}
+\begin{split}
+\Pr ( y_i = 1 ) =
+logit^{-1} ( 
+\beta^{0} + 
+\beta^{race} RACE_{i} +
+\beta^{sex} SEX_{i} + 
+\beta^{ed} ED_{i} + \\
+\beta_{age} AGE_{i} + 
+\alpha_{q[i]}^{question} + 
+\alpha_{s[i]}^{division} + 
+\alpha_{t[i]}^{year} + 
+\alpha_{j[i],k[i]}^{race.sex} + \\
+\alpha_{j[i],m[i]}^{race.age} + 
+\alpha_{j[i],q[i]}^{race.question} 
+\alpha_{j[i],l[i]}^{race.ed} +
+\alpha_{j[i],t[i]}^{race.year} + 
+\alpha_{j[i],s[i]}^{race.division}
+)
+\end{split}
+\end{equation*}
+\end{frame}
+
+%public opinion model
+\begin{frame}{Public Opinion Model, Subtrends}
+\begin{equation*}
+\label{subtrends}
+\begin{split}
+\Pr ( y_i = 1 ) =
+logit^{-1} ( 
+\beta^{0} + 
+\beta^{race} RACE_{i} +
+\beta^{sex} SEX_{i} + 
+\beta^{ed} ED_{i} + \\
+\beta_{age} AGE_{i} + 
+\alpha_{q[i]}^{question} + 
+\alpha_{s[i]}^{division} + 
+\alpha_{t[i]}^{year} + 
+\alpha_{j[i],k[i]}^{race.sex} + \\
+\alpha_{j[i],m[i]}^{race.age} + 
+\alpha_{j[i],q[i]}^{race.question} +
+\alpha_{j[i],l[i],t[i]}^{race.ed.year} + 
+\alpha_{j[i],s[i],t[i]}^{race.division.year}
+)
+\end{split}
+\end{equation*}
+\end{frame}
+
+
+%diff in diff equation
+\begin{frame}{Differences-in-Differences Model}
+\begin{equation*}
+\label{dd_eq}
+DV_{st} =  
+(RD_{s} \times PD_{t}) \theta +
+x'_{st-1} \beta + 
+\delta_{s} + 
+\mu_{t} + 
+\epsilon_{st}
+\end{equation*}
+\begin{itemize}
+    \item[] \alert{Controls:} Violent Crime, Partisanship, \% Black, GDP per capita, Growth Rate, Tax Collections, Gini Coefficient, Enns' Punitiveness Index
+\end{itemize}
+\end{frame}
+
+\begin{frame}{\claimfiveq}
+\begin{center}
+    \includegraphics[width=\textwidth,keepaspectratio]{fig_panelest_estimated_correlations.pdf}
+\end{center}
+\end{frame}
+
+\begin{frame}{Robustness Tests, Panel Regressions}
+\begin{center}
+    \includegraphics[width=\textwidth,keepaspectratio]{fig_robests.pdf}
+\end{center}
+\end{frame}
+
+%where people fit
+\begin{frame}{Penal Policy and Social Policy}
+\begin{center}
+    \includegraphics[width=\textwidth,keepaspectratio]{fig_bidimensional_stylized.png}
+\end{center}
+\end{frame}
+
+\begin{frame}{Cost in Four Quadrants}
+\begin{itemize}
+    \item[] Penal Policy, Punitiveness = \$250 billion 
+    \item[] Penal Policy, Abolition = \$50 billion 
+    \item[] Social Policy, Laissez-Faire = \$1000 billion
+    \item[] Social Policy, Root Causes = \$2000 billion
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Cost in Four Quadrants}
+\begin{center}
+    \includegraphics[width=\textwidth,keepaspectratio]{fig_bidimensional_quadrants_priced.png}
+\end{center}
+\end{frame}
+
+%four puzzles
+\begin{frame}{The Four Puzzles}
+\begin{itemize}
+    \item[1.] \alert{Longitudinal:} Why the punitive turn?
+    \item[2.] \alert{Crossnational:} Why the US? 
+    \item[3.] \alert{Subnational:} Why some parts but not others? 
+    \item[4.] \alert{Cross-individual:} Why some people but not other people?
+\end{itemize}
+\end{frame}
+
+\end{document}
+

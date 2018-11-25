@@ -9,3 +9,7 @@ data/incrates_subnationalstate.csv
 data/ncvs
 data/nlsy
 data/raw
+abstract.txt
+*.docx
+*.bib
+*.bak

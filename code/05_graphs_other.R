@@ -1,0 +1,1783 @@
+#########################################################
+#########################################################
+
+#clear workspace
+rm(list=ls())
+
+#load packages
+require(stringr)
+require(plyr)
+require(dplyr)
+require(zoo)
+require(tidyr)
+require(rprojroot)
+require(data.table)
+
+#set dirs
+homedir<-find_root(
+  criterion=has_file('crimtalk.RProj')
+)
+codedir<-file.path(homedir,"code")
+setwd(codedir); dir()
+source('dirs.R')
+
+#set datadir
+setwd(datadir); dir()
+plotdfs<-list() #to save any
+
+#########################################################
+#########################################################
+
+#set up graph prelims
+require(ggplot2)
+require(ggthemes)
+require(extrafont)
+require(RColorBrewer)
+require(scales)
+#load fonts
+loadfonts(quiet=T) #register w/ pdf
+loadfonts(device = "win",quiet=T) #register w/ windows
+#fonts()
+#get ghostscript, for tex output
+gsdir<-file.path(
+  "c:",
+  "Program Files",
+  "gs"
+)
+gsdir_full<-file.path(
+  gsdir,
+  dir(gsdir),
+  "bin",
+  "gswin64c.exe"
+)
+Sys.setenv(
+  R_GSCMD = gsdir_full
+)
+
+setwd(codedir)
+source('theme_black.R')
+
+#initialize graphlist
+gs.list<-list()
+
+#########################################################
+#########################################################
+
+#citations graph
+setwd(datadir); dir()
+
+tmpdf<-read.csv(
+  'citecount.csv',
+  stringsAsFactors=F
+)
+tmpdf$citerate<-tmpdf$cites/(2018 - tmpdf$published)
+
+#citerate
+tmp<-tmpdf$graph
+plotdf<-tmpdf[tmp,]
+
+tmplevels<-plotdf$title[order(plotdf$citerate)]
+plotdf$title<-factor(
+  plotdf$title,
+  tmplevels,
+  tmplevels
+)
+
+tmpcolors_bat<-c(
+  rep(white,length(plotdf$title)-1),
+  orange
+)
+names(tmpcolors_bat)<-levels(plotdf$title)
+
+g.tmp<-ggplot(
+  plotdf,
+  aes(
+    x=title,
+    y=citerate,
+    color=title,
+    fill=title
+  )
+) +
+  geom_bar(
+    stat='identity',
+    width=0.3
+  ) +
+  scale_color_manual(
+    name="",
+    values=tmpcolors_bat,
+    guide=F
+  ) +
+  scale_fill_manual(
+    name="",
+    values=tmpcolors_bat,
+    guide=F
+  ) +
+  xlab("") +
+  ylab("\nCitations Per Year") +
+  theme_black() +
+  coord_flip() +
+  theme(
+    axis.text.x=element_text(size=8)
+  )
+
+tmpname<-"fig_citerate.pdf"
+gs.list[[tmpname]]<-list(
+  graph=g.tmp,
+  filename=tmpname,
+  width=8,
+  height=4
+)
+
+
+#amazon rank
+tmp<-plotdf$graph
+plotdf<-tmpdf[tmp,]
+tmplevels<-plotdf$title[order(-plotdf$amrank)]
+plotdf$title<-factor(
+  plotdf$title,
+  tmplevels,
+  tmplevels
+)
+
+tmpcolors_bat<-c(
+  rep(white,length(plotdf$title)-1),
+  orange
+)
+names(tmpcolors_bat)<-levels(plotdf$title)
+
+#fix text
+plotdf$label<-paste0(
+  "#",prettyNum(plotdf$amrank,big.mark=",")
+)
+
+g.tmp<-ggplot(
+  plotdf,
+  aes(
+    x=title,
+    y=amrank,
+    color=title,
+    fill=title,
+    label=label
+  )
+) +
+  geom_bar(
+    stat='identity',
+    width=0.3
+  ) +
+  geom_text(
+    hjust=-0.2,
+    fontface='bold',
+    family='CM Roman'
+  ) +
+  scale_color_manual(
+    name="",
+    values=tmpcolors_bat,
+    guide=F
+  ) +
+  scale_fill_manual(
+    name="",
+    values=tmpcolors_bat,
+    guide=F
+  ) +
+  xlab("") +
+  ylab("\nAmazon Sales Ranking") +
+  theme_black() +
+  coord_flip() +
+  ylim(0,1.5*10^6) +
+  theme(
+    axis.text.x=element_text(size=8)
+  )
+
+tmpname<-"fig_amrank.pdf"
+gs.list[[tmpname]]<-list(
+  graph=g.tmp,
+  filename=tmpname,
+  width=8,
+  height=6
+)
+
+
+#########################################################
+#########################################################
+
+#public opinion
+#remake punitiveness/anxiety trends, graph
+
+setwd(datadir); dir()
+plotdf<-read.csv(
+  'fig_trends.csv',
+  stringsAsFactors=F
+)
+tmplevels<-c(
+  "White",
+  "Black"
+)
+plotdf$race<-factor(
+  plotdf$race,
+  tmplevels,
+  tmplevels
+)
+tmpcolors_true<-c(white,orange)
+names(tmpcolors_true)<-levels(plotdf$race)
+
+#consistent probs
+min(plotdf$mu,na.rm=T)
+max(plotdf$mu,na.rm=T)
+min(plotdf$year)
+max(plotdf$year)
+
+#eliminate the conve
+tmp<-plotdf$hypothesis%in%c("cr_alt") | 
+  (plotdf$hypothesis=="old" & plotdf$race=="Black") |
+  plotdf$hypothesis=="all"
+plotdf<-plotdf[tmp,]
+
+#change conventioal to influential
+tmp<-plotdf$facet=="Conventional" 
+plotdf$facet[tmp]<-"Influential View"
+
+#label as probability
+tmplevels<-c(
+  "Anxiety",
+  "Punitive",
+  "Mistrust"
+)
+tmplabels<-c(
+  "p(Anxiety)",
+  "p(Punitive)",
+  "p(Mistrustful"
+)
+plotdf$dimension<-factor(
+  plotdf$dimension,
+  tmplevels,
+  tmplabels
+)
+
+#loop through and produce graphs
+titles<-paste0(
+  c("fig_trends_"),
+  c("pun_influential","pun_actual","anx_influential","anx_actual"),
+  c(".pdf")
+)
+dimensions<-c(
+  rep("p(Punitive)",2),
+  rep("p(Anxiety)",2)
+)
+facets<-c(
+  rep(
+    c("Influential View",
+      "Estimated"),
+    2
+  )
+)
+loopdf<-data.frame(
+  title=titles,
+  dimension=dimensions,
+  facet=facets,
+  stringsAsFactors=F
+)
+tmpseq.i<-1:nrow(loopdf)
+for(i in tmpseq.i) {
+  #i<-1
+  thistitle<-loopdf$title[i]
+  thisdimension<-loopdf$dimension[i]
+  thisfacet<-loopdf$facet[i]
+  if(thisdimension=="p(Anxiety)") {
+    thisylab<-"p(Anxiety)\n"
+  } else {
+    thisylab<-"p(Punitive)\n"
+  }
+  tmp<-plotdf$dimension==thisdimension & 
+    plotdf$facet==thisfacet
+  g.tmp<-ggplot(
+    plotdf[tmp,],
+    aes(
+      x=year,
+      y=mu,
+      color=race
+    )
+  ) +
+    scale_color_manual(
+      values=tmpcolors_true,
+      name=""
+    ) +
+    facet_grid(
+      ~ facet
+    ) +
+    xlab("") +
+    ylab(thisylab) +
+    theme_black() +
+    ylim(0.25,0.75) +
+    xlim(1955,2014) +
+    theme(
+      legend.position = 'bottom',
+      legend.direction = 'horizontal'
+    )
+  if(thisfacet!="Estimated") {
+    g.tmp<-g.tmp + geom_line(size=1.5)
+  } else {
+    g.tmp<-g.tmp + 
+      geom_point(size=0.25,alpha=0.5) + 
+      geom_smooth(size=1.5,se=F)
+  }
+  tmpname<-thistitle
+  gs.list[[tmpname]]<-list(
+    graph=g.tmp,
+    filename=tmpname,
+    width=6/1.5,
+    height=6/1.5
+  )
+}
+
+#########################################################
+#########################################################
+
+#output the marginals
+#for whites/blacks
+#and education
+
+setwd(datadir); dir()
+tmpdf<-read.csv(
+  'fig_marginals.csv',
+  stringsAsFactors=F
+)
+
+tmp<-tmpdf$var=="Education" & 
+  tmpdf$race2=="Blacks" & 
+  tmpdf$dimension%in%c(
+    "Punitiveness",
+    "Anxiety"
+  )
+plotdf<-tmpdf[tmp,]
+
+tmplevels<-c(
+  "Anxiety",
+  "Punitiveness"
+)
+tmplabels<-c(
+  "p(Anxiety)",
+  "p(Punitive)"
+)
+plotdf$dimension<-factor(
+  plotdf$dimension,
+  tmplevels,
+  tmplabels
+)
+
+#add shape et al to plotdf
+#add pval info to shape of point
+plotdf$pval.shp<-NA
+plotdf$pval.shp[plotdf$pval.class=="at alpha=0.01"]<-1
+plotdf$pval.shp[plotdf$pval.class=="at alpha=0.05"]<-2
+plotdf$pval.shp[plotdf$pval.class=="at alpha=0.10"]<-3
+plotdf$pval.shp[plotdf$pval.class=="not sig"]<-4
+plotdf$pval.shp<-factor(
+  plotdf$pval.shp,
+  levels=c(1,2,3,4),
+  labels=c(
+    "at alpha=0.01",
+    "at alpha=0.05",
+    "at alpha=0.10",
+    "not sig"
+  )
+)
+#tmpshapes
+tmpshapes<-c(8,4,16,1)
+names(tmpshapes)<-levels(plotdf$pval.shp)
+shp.labels<-c(
+  bquote(alpha == 0.01),
+  bquote(alpha == 0.05),
+  bquote(alpha == 0.10)
+)
+
+g.tmp<-ggplot(
+  plotdf,
+  aes(
+    x=dimension,
+    y=mu,
+    ymin=mu.min,
+    ymax=mu.max,
+    shape=pval.shp
+  )
+) + 
+  geom_errorbar(
+    size=1,
+    width=0.2,
+    color=orange
+  ) +
+  geom_point(
+    size=5,
+    color=orange
+  ) +
+  geom_hline(
+    yintercept=0,
+    linetype='dashed',
+    color='white'
+  ) +
+  scale_shape_manual(
+    name="",
+    values=tmpshapes,
+    labels=shp.labels,
+    drop=F
+  ) + 
+  ylab("\nMarginal Effect of Education on Black Americans") +
+  xlab("") +
+  coord_flip() +
+  theme_black()
+
+tmpname<-"fig_marginals.pdf"
+gs.list[[tmpname]]<-list(
+  graph=g.tmp,
+  filename=tmpname,
+  width=7,
+  height=3
+)
+
+#########################################################
+#########################################################
+
+#output subtrends 
+#from more complicated model
+setwd(datadir)
+tmpdf<-read.csv(
+  'pstratdfEXP.csv',
+  stringsAsFactors=F
+)
+tmpdf$year<-as.numeric(tmpdf$year)
+
+tmplevels<-c(
+  1,2,"all"
+)
+tmplabels<-c(
+  "White",
+  "Black",
+  "all"
+)
+tmpdf$race<-factor(
+  tmpdf$race,
+  tmplevels,
+  tmplabels
+)
+tmpcolors_pot<-c(white,orange,orange)
+names(tmpcolors_pot)<-levels(plotdf$race)
+
+tmplevels<-c(
+  "punitive",
+  "anxiety"
+)
+tmplabels<-c(
+  "p(Punitive)",
+  "p(Anxiety)"
+)
+tmpdf$dimension<-factor(
+  tmpdf$dimension,
+  tmplevels,
+  tmplabels
+)
+
+#this verifies that general trends
+#are not very different
+tmp<-tmpdf$south=="all" & tmpdf$ed=="all"
+tmp<-tmp & tmpdf$race%in%c("White","Black")
+plotdf<-tmpdf[tmp,]
+
+g.tmp<-ggplot(
+  plotdf,
+  aes(
+    x=year,
+    y=mu,
+    group=race,
+    color=race
+  )
+) +
+  geom_point(
+    size=0.25,
+    alpha=0.5
+  ) +
+  geom_smooth(
+    size=1.5,
+    se=F
+  ) +
+  scale_color_manual(
+    values=tmpcolors_pot,
+    name=""
+  ) +
+  facet_wrap(
+    ~ dimension
+  ) +
+  xlab("") +
+  ylab("") +
+  theme_black() +
+  theme(
+    legend.position='bottom',
+    legend.direction='horizontal'
+  )
+
+tmpname<-"fig_trends_exp.pdf"
+gs.list[[tmpname]]<-list(
+  graph=g.tmp,
+  filename=tmpname,
+  width=8,
+  height=4
+)
+
+tmp<-tmpdf$south!="all"
+plotdf<-tmpdf[tmp,]
+
+tmplevels<-c(
+  F,T
+)
+tmplabels<-c(
+  "White, College, Not South",
+  "White, HS Drop, South"
+)
+plotdf$south<-factor(
+  plotdf$south,
+  tmplevels,
+  tmplabels
+)
+tmpcolors_page<-c(blue,red)
+names(tmpcolors_page)<-levels(plotdf$south)
+
+for(thisdim in unique(plotdf$dimension)) {
+  tmp<-plotdf$dimension==thisdim
+  g.tmp<-ggplot(
+    plotdf[tmp,],
+    aes(
+      x=year,
+      y=mu,
+      group=south,
+      color=south
+    )
+  ) +
+    # geom_point(
+    #   size=0.25,
+    #   alpha=0.5
+    # ) +
+    geom_smooth(
+      size=1.5,
+      se=F
+    ) +
+    scale_color_manual(
+      values=tmpcolors_page,
+      name=""
+    ) +
+    facet_wrap(
+      ~ dimension
+    ) +
+    xlab("") +
+    ylab("") +
+    ylim(0.25,0.75) +
+    xlim(1955,2014) +
+    theme_black() +
+    theme(
+      legend.position='bottom',
+      legend.direction='horizontal'
+    )
+  tmpname<-paste0(
+    "fig_trends_whitesouth_",
+    tolower(str_replace_all(thisdim,"\\(\\)","")),
+    ".pdf"
+  )
+  gs.list[[tmpname]]<-list(
+    graph=g.tmp,
+    filename=tmpname,
+    width=6/1.5,
+    height=6/1.5
+  )
+}
+
+tmp<-tmpdf$ed!="all"
+plotdf<-tmpdf[tmp,]
+
+tmplevels<-c(
+  1,4
+)
+tmplabels<-c(
+  "Black, HS Dropout",
+  "Black, College Grad"
+)
+plotdf$ed<-factor(
+  plotdf$ed,
+  tmplevels,
+  tmplabels
+)
+tmpcolors_key<-c(blue,yellow)
+names(tmpcolors_key)<-levels(plotdf$ed)
+
+#make dimensions separately
+for(thisdim in unique(plotdf$dimension)) {
+  tmp<-plotdf$dimension==thisdim
+  g.tmp<-ggplot(
+    plotdf[tmp,],
+    aes(
+      x=year,
+      y=mu,
+      group=ed,
+      color=ed
+    )
+  ) +
+    # geom_point(
+    #   size=0.25,
+    #   alpha=0.5
+    # ) +
+    geom_smooth(
+      size=1.5,
+      se=F
+    ) +
+    scale_color_manual(
+      values=tmpcolors_key,
+      name=""
+    ) +
+    facet_wrap(
+      ~ dimension
+    ) +
+    xlab("") +
+    ylab("") +
+    ylim(0.25,0.75) +
+    xlim(1955,2014) +
+    theme_black() +
+    theme(
+      legend.position='bottom',
+      legend.direction='horizontal'
+    )
+  tmpname<-paste0(
+    "fig_trends_blacked_",
+    tolower(str_replace_all(thisdim,"\\(\\)","")),
+    ".pdf"
+  )
+  gs.list[[tmpname]]<-list(
+    graph=g.tmp,
+    filename=tmpname,
+    width=6/1.5,
+    height=6/1.5
+  )
+}
+
+
+#########################################################
+#########################################################
+
+#voting in house
+setwd(datadir); dir()
+plotdf<-read.csv(
+  'fig_majorvotes_trends.csv',
+  stringsAsFactors=F
+)
+tmplevels<-c(
+  "Black Elected Officials",
+  "Non-Black Democrats",
+  "Non-Black Republicans"
+)
+tmplabels<-c(
+  "Black Elected Officials",
+  "Dems",
+  "Repubs"
+)
+plotdf$sumcat<-factor(
+  plotdf$sumcat,
+  tmplevels,
+  tmplabels
+)
+tmpcolors_ewe<-c(orange,blue,red)
+names(tmpcolors_ewe)<-levels(plotdf$sumcat)
+
+tmp<-plotdf$facet=="Conventional"
+plotdf$facet[tmp]<-"Influential View"
+
+for(thisfacet in unique(plotdf$facet)) {
+  g.tmp<-ggplot(
+    plotdf[plotdf$facet==thisfacet,],
+    aes(
+      x=year,
+      y=yhat,
+      group=sumcat,
+      color=sumcat
+    )
+  ) +
+    geom_line(
+      size=2
+    ) +
+    geom_hline(
+      yintercept=50,
+      color=white,
+      linetype='dashed'
+    ) +
+    scale_color_manual(
+      values=tmpcolors_ewe,
+      name=""
+    ) +
+    facet_grid(
+      ~ facet
+    ) +
+    xlab("") +
+    ylab("% Voting Punitively\n") +
+    ylim(15,90) +
+    theme_black() +
+    theme(
+      legend.position = 'bottom',
+      legend.direction = 'horizontal',
+      legend.text = element_text(size=8),
+    )
+  tmpname<-paste0(
+    "fig_vtrends_",
+    str_replace(tolower(thisfacet),"\\s","_"),
+    ".pdf"
+  )
+  gs.list[[tmpname]]<-list(
+    graph=g.tmp,
+    filename=tmpname,
+    width=6/1.5,
+    height=6/1.5
+  )
+}
+
+#########################################################
+#########################################################
+
+#panel estimates
+setwd(datadir); dir()
+plotdf<-read.csv(
+  'fig_prefests.csv',
+  stringsAsFactors=F
+)
+
+#add shape et al to plotdf
+#add pval info to shape of point
+plotdf$pval.shp<-NA
+plotdf$pval.shp[plotdf$pval.class=="at alpha=0.01"]<-1
+plotdf$pval.shp[plotdf$pval.class=="at alpha=0.05"]<-2
+plotdf$pval.shp[plotdf$pval.class=="at alpha=0.10"]<-3
+plotdf$pval.shp[plotdf$pval.class=="not sig"]<-4
+plotdf$pval.shp<-factor(
+  plotdf$pval.shp,
+  levels=c(1,2,3,4),
+  labels=c(
+    "at alpha=0.01",
+    "at alpha=0.05",
+    "at alpha=0.10",
+    "not sig"
+  )
+)
+#tmpshapes
+tmpshapes<-c(8,4,16,1)
+names(tmpshapes)<-levels(plotdf$pval.shp)
+shp.labels<-c(
+  bquote(alpha == 0.01),
+  bquote(alpha == 0.05),
+  bquote(alpha == 0.10)
+)
+
+
+tmplevels<-c(
+  "Incarceration Rate",
+  "Officer Rate"
+)
+tmplabels<-c(
+  "Prisons",
+  "Police"
+)
+plotdf$dv<-factor(
+  plotdf$dv,
+  tmplevels,
+  tmplabels
+)
+
+#approach
+tmplevels<-c(
+  "Expected Impact, Conventional View",
+  "D-in-D Around Redistricting",
+  "ADLs with FE on State-Year Panel"
+)
+tmplabels<-c(
+  "Influential View",
+  "Estimated (Redistricting)",
+  "Estimated (Correlations)"
+)
+plotdf$approach<-factor(
+  plotdf$approach,
+  tmplevels,
+  tmplabels
+)
+
+
+for(thisapproach in unique(plotdf$approach)) {
+  
+  #chg label for redistricting
+  if(thisapproach!="Estimated (Correlations)") {
+    thisylab<-"\nImpact of Redistricting in SDs"
+  } else {
+    thisylab<-"\nStandardized Impact of Black Representation"
+  }
+  
+  thistitle<-str_replace(
+    thisapproach,"\\s","_"
+  ) %>% str_replace_all(
+    "\\(|\\)",""
+  ) %>% tolower
+  g.tmp<-ggplot(
+    plotdf[plotdf$approach==thisapproach,],
+    aes(
+      x=dv,
+      y=musd,
+      ymin=musd.min,
+      ymax=musd.max,
+      shape=pval.shp
+    )
+  ) + 
+    geom_errorbar(
+      size=1,
+      width=0.2,
+      color=orange
+    ) +
+    geom_point(
+      size=5,
+      color=orange
+    ) +
+    geom_hline(
+      yintercept=0,
+      linetype='dashed',
+      color='white'
+    ) +
+    scale_shape_manual(
+      name="",
+      values=tmpshapes,
+      labels=shp.labels,
+      drop=F
+    ) + 
+    ylab(thisylab) +
+    xlab("") +
+    coord_flip() +
+    facet_wrap(
+      ~ approach,
+      ncol=1
+    ) +
+    ylim(-2,2) +
+    theme_black()
+  tmpname<-paste0("fig_panelest_",thistitle,".pdf")
+  gs.list[[tmpname]]<-list(
+    graph=g.tmp,
+    filename=tmpname,
+    width=7,
+    height=3
+  )
+}
+
+
+#########################################################
+#########################################################
+
+#estimates for redistricting
+setwd(datadir); dir()
+plotdf<-read.csv(
+  'dd_welfbenefits.csv',
+  stringsAsFactors=F
+)
+
+#add a racial threat row
+newdf<-data.frame(
+  dv='welfbenefits',
+  spec='rathreat',
+  musd=-0.5,
+  musd.min=-1,
+  musd.max=0,
+  pval.class='at alpha=0.05'
+)
+plotdf<-rbind.fill(
+  plotdf,
+  newdf
+)
+
+#add shape et al to plotdf
+#add pval info to shape of point
+plotdf$pval.shp<-NA
+plotdf$pval.shp[plotdf$pval.class=="at alpha=0.01"]<-1
+plotdf$pval.shp[plotdf$pval.class=="at alpha=0.05"]<-2
+plotdf$pval.shp[plotdf$pval.class=="at alpha=0.10"]<-3
+plotdf$pval.shp[plotdf$pval.class=="not sig"]<-4
+plotdf$pval.shp<-factor(
+  plotdf$pval.shp,
+  levels=c(1,2,3,4),
+  labels=c(
+    "at alpha=0.01",
+    "at alpha=0.05",
+    "at alpha=0.10",
+    "not sig"
+  )
+)
+#tmpshapes
+tmpshapes<-c(8,4,16,1)
+names(tmpshapes)<-levels(plotdf$pval.shp)
+shp.labels<-c(
+  bquote(alpha == 0.01),
+  bquote(alpha == 0.05),
+  bquote(alpha == 0.10)
+)
+
+tmplevels<-c(
+  "rathreat",
+  "simple",
+  "controls"
+)
+tmplabels<-c(
+  "If Racial Threat",
+  "Estimated (Means)",
+  "Estimated (Preferred)"
+)
+plotdf$spec<-factor(
+  plotdf$spec,
+  rev(tmplevels),
+  rev(tmplabels)
+)
+
+tmplevels<-c(
+  "welfbenefits"
+)
+tmplabels<-c(
+  "Welfare Benefits"
+)
+plotdf$dv<-factor(
+  plotdf$dv,
+  tmplevels,
+  tmplabels
+)
+
+g.tmp<-ggplot(
+  plotdf,
+  aes(
+    x=spec,
+    y=musd,
+    ymin=musd.min,
+    ymax=musd.max,
+    shape=pval.shp,
+    color=spec
+  )
+) + 
+  geom_errorbar(
+    size=1,
+    width=0.2
+  ) +
+  geom_point(
+    size=5
+  ) +
+  geom_hline(
+    yintercept=0,
+    linetype='dashed',
+    color='white'
+  ) +
+  scale_color_manual(
+    name="",
+    values=c(orange,orange,white),
+    guide=F
+  ) +
+  scale_shape_manual(
+    name="",
+    values=tmpshapes,
+    labels=shp.labels,
+    drop=F
+  ) + 
+  ylab("\nStandardized Impact of Black Representation") +
+  xlab("") +
+  facet_wrap(
+    ~ dv,
+    ncol=1
+  ) +
+  coord_flip() +
+  theme_black() +
+  guides(
+    shape = guide_legend(override.aes= list(color = orange))
+  )
+
+tmpname<-"fig_ddwelfare.pdf"
+gs.list[[tmpname]]<-list(
+  graph=g.tmp,
+  filename=tmpname,
+  width=7,
+  height=3.5
+)
+
+#this makes the racial threat alone, graph
+
+tmp<-plotdf$spec!="If Racial Threat"
+plotdf$musd[tmp]<-plotdf$musd.min[tmp]<-plotdf$mu.max[tmp]<-NA
+g.tmp<-ggplot(
+  plotdf,
+  aes(
+    x=spec,
+    y=musd,
+    ymin=musd.min,
+    ymax=musd.max,
+    shape=pval.shp,
+    color=spec
+  )
+) + 
+  geom_errorbar(
+    size=1,
+    width=0.2
+  ) +
+  geom_point(
+    size=5
+  ) +
+  geom_hline(
+    yintercept=0,
+    linetype='dashed',
+    color='white'
+  ) +
+  scale_color_manual(
+    name="",
+    values=c(orange,orange,white),
+    guide=F
+  ) +
+  scale_shape_manual(
+    name="",
+    values=tmpshapes,
+    labels=shp.labels,
+    drop=F
+  ) + 
+  ylab("\nStandardized Impact of Black Representation") +
+  xlab("") +
+  facet_wrap(
+    ~ dv,
+    ncol=1
+  ) +
+  coord_flip() +
+  theme_black() +
+  guides(
+    shape = guide_legend(override.aes= list(color = orange))
+  )
+
+tmpname<-"fig_ddwelfare_rathreat.pdf"
+gs.list[[tmpname]]<-list(
+  graph=g.tmp,
+  filename=tmpname,
+  width=7,
+  height=3.5
+)
+
+
+#########################################################
+#########################################################
+
+#add robests, but w/ new shading
+setwd(datadir); dir()
+plotdf<-read.csv(
+  'fig_robests.csv',
+  stringsAsFactors=F
+)
+head(plotdf)
+
+#redo pval.fill
+plotdf$pval.fill<-NA
+plotdf$pval.fill[plotdf$pval.class=="at alpha=0.01"]<-4
+plotdf$pval.fill[plotdf$pval.class=="at alpha=0.05"]<-3
+plotdf$pval.fill[plotdf$pval.class=="at alpha=0.10"]<-2
+plotdf$pval.fill[plotdf$pval.class=="not sig"]<-1
+negmu<-ifelse(plotdf$mu<0,-1,1)
+plotdf$pval.fill<-plotdf$pval.fill * negmu
+pval.labels<-c("at alpha=0.01","at alpha=0.05","at alpha=0.10","")
+tmplabels<-c(
+  paste0("- /",pval.labels),
+  paste0("+ /",rev(pval.labels))
+)
+#assign levels,colors
+plotdf$pval.fill<-factor(
+  plotdf$pval.fill,
+  levels=c(-4,-3,-2,-1,1,2,3,4),
+  labels=tmplabels
+)
+
+tmplabels<-c(
+  "D-in-D",
+  "ADL"
+)
+plotdf$facet<-factor(
+  plotdf$facet,
+  tmplabels,
+  tmplabels
+)
+
+tmplabels<-c(
+  "Inc.",
+  "Off."
+)
+plotdf$x<-factor(
+  plotdf$x,
+  tmplabels,
+  tmplabels
+)
+
+tmporder<-order(plotdf$order)
+tmplevels<-plotdf$ydisp[tmporder] %>%
+  unique
+plotdf$ydisp<-factor(
+  plotdf$ydisp,
+  rev(tmplevels),
+  rev(tmplevels)
+)
+
+brewer.pal.info
+tmpcolors<-brewer.pal(8,"RdYlGn")
+names(tmpcolors)<-levels(plotdf$pval.fill)
+fill.labels<-c(
+  expression(paste(alpha==0.01,", ",beta<0)),
+  expression(paste(alpha==0.05,", ",beta<0)),
+  expression(paste(alpha==0.10,", ",beta<0)),
+  expression(paste(beta<0)),
+  expression(paste(beta>0)),
+  expression(paste(alpha==0.10,", ",beta>0)),
+  expression(paste(alpha==0.05,", ",beta>0)),
+  expression(paste(alpha==0.01,", ",beta>0))
+)
+
+g.tmp<-ggplot(
+  plotdf,
+  aes(
+    x=x,
+    y=ydisp,
+    fill=pval.fill
+  )
+) +
+  geom_tile() +
+  facet_wrap(
+    ~ facet,
+    scales='free'
+  ) +
+  scale_fill_manual(
+    name="",
+    values=tmpcolors,
+    labels=fill.labels,
+    drop=F
+  ) +
+  xlab("") +
+  ylab("") +
+  theme_black()
+
+tmpname<-"fig_robests.pdf"
+gs.list[[tmpname]]<-list(
+  graph=g.tmp,
+  filename=tmpname,
+  width=6*1.1,
+  height=4*1.1
+)
+
+#########################################################
+#########################################################
+
+setwd(datadir); dir()
+tmpdf<-read.csv(
+  'beodf_dd.csv',
+  stringsAsFactors=F
+)
+tmpdf<-data.table(tmpdf)
+plotdf<-tmpdf[
+  year%in%1980:2000,
+  .(beopct=mean(beopct_all)),
+  by=c("year","t")
+  ]
+
+tmplevels<-c(
+  0,1
+)
+tmplabels<-c(
+  "Not Redistricted",
+  "Redistricted"
+)
+plotdf$t<-factor(
+  plotdf$t,
+  tmplevels,
+  tmplabels
+)
+
+tmpcolors_hue<-c(
+  white,orange
+)
+names(tmpcolors_hue)<-
+  levels(plotdf$t)
+
+g.tmp<-ggplot(
+  plotdf,
+  aes(
+    x=year,
+    y=beopct,
+    group=t,
+    color=t
+  )
+) +
+  geom_line(
+    size=2
+  ) + 
+  geom_vline(
+    xintercept=1990,
+    linetype='dashed',
+    color='grey'
+  ) +
+  scale_color_manual(
+    name="",
+    values=tmpcolors_hue
+  ) +
+  xlab("") + 
+  ylab("Black Representatives (%)\n") +
+  theme_black() +
+  theme(
+    legend.direction='horizontal',
+    legend.position='bottom'
+  )
+tmpname<-paste0("fig_beodd.pdf")
+gs.list[[tmpname]]<-list(
+  graph=g.tmp,
+  filename=tmpname,
+  width=6/1.5,
+  height=6/1.5
+)
+
+#########################################################
+#########################################################
+
+#show crime rate and incrate over-time
+
+setwd(datadir); dir()
+vdf<-read.csv(
+  'tab_longviolence.csv',
+  stringsAsFactors=F
+)
+tmp<-vdf$var%in%c("fbipcrt","fbivcrt")
+vdf<-vdf[tmp,]
+
+
+setwd(datadir)
+pdf<-read.csv(
+  'incrates_subnationalstate.csv',
+  stringsAsFactors=F
+)
+tmp<-pdf$statename=="United States" &
+  !is.na(pdf$statename)
+pdf<-pdf[tmp,c("year","incrt_t_jur","population_census")]
+pdf$D.incrt_t_jur<-c(NA,diff(pdf$incrt_t_jur))
+setwd(datadir); dir()
+adf<-haven::read_dta('BJSdata.dta')
+tmprows<-adf$state_alpha2=="US"
+tmpvars<-c("year","adtott","rltotm","rltotf")
+adf<-adf[tmprows,tmpvars]
+adf$rltott<-adf$rltotm+adf$rltotf
+pdf<-merge(adf,pdf,all=T)
+pdf$adtott<-100000*pdf$adtott/pdf$population_census
+pdf$rltott<-100000*pdf$rltott/pdf$population_census
+pdf$population_census<-pdf$rltotm<-pdf$rltotf<-NULL
+pdf<-gather(pdf,var,val,adtott:D.incrt_t_jur)
+
+#combine
+fulldf<-rbind.fill(
+  vdf,
+  pdf
+)
+
+#common years
+tmptab<-table(fulldf$year)
+tmp<-fulldf$year%in%1960:max(fulldf$year)
+fulldf<-fulldf[tmp,]
+
+
+#scale for plotting
+plotdf<-by(fulldf,fulldf$var,function(df) {
+  #df<-plotdf[plotdf$var=="fbipcrt",]
+  df$val<-scale(df$val)
+  df
+}) %>% rbind.fill
+tmp<-plotdf$var%in%c(
+  "fbipcrt",
+  "fbivcrt",
+  "incrt_t_jur",
+  "D.incrt_t_jur"
+)
+plotdf<-plotdf[tmp,]
+
+tapply(plotdf$val,plotdf$var,mean) #0
+tapply(plotdf$val,plotdf$var,sd) #1
+
+tmplevels<-c(
+  "fbipcrt",
+  "fbivcrt",
+  "incrt_t_jur",
+  "D.incrt_t_jur"
+)
+tmplabels<-c(
+  "Property Crime",
+  "Violent Crime",
+  "Incarceration",
+  "D.Incarceration"
+)
+plotdf$var<-factor(
+  plotdf$var,
+  tmplevels,
+  tmplabels
+)
+
+tmpcolors_eww<-c(
+  red,
+  blue,
+  white,
+  white
+)
+names(tmpcolors_eww)<-levels(
+  plotdf$var
+)
+
+#plot crime-inc
+tmp<-plotdf$var!="D.Incarceration"
+g.tmp<-ggplot(
+  plotdf[tmp,],
+  aes(
+    x=year,
+    y=val,
+    group=var,
+    color=var
+  )
+) +
+  geom_line(
+    size=2
+  ) +
+  scale_color_manual(
+    values=tmpcolors_eww,
+    name=""
+  ) +
+  xlab("") +
+  ylab("Normalized Level\n") +
+  xlim(1960,max(plotdf$year)) +
+  ylim(range(plotdf$val)) +
+  theme_black() +
+  theme(
+    #axis.text.y = element_blank(),
+    #axis.ticks.y = element_blank(),
+    legend.position='bottom',
+    legend.direction = 'horizontal'
+  )
+
+tmpname<-"fig_crimepun.pdf"
+gs.list[[tmpname]]<-list(
+  graph=g.tmp,
+  filename=tmpname,
+  width=8/1.5,
+  height=6/1.5
+)
+
+#plot crime-D.inc
+tmp<-plotdf$var!="Incarceration"
+g.tmp<-ggplot(
+  plotdf[tmp,],
+  aes(
+    x=year,
+    y=val,
+    group=var,
+    color=var
+  )
+) +
+  geom_line(
+    size=2
+  ) +
+  scale_color_manual(
+    values=tmpcolors_eww,
+    name=""
+  ) +
+  xlab("") +
+  ylab("Normalized Level\n") +
+  xlim(1960,max(plotdf$year)) +
+  ylim(range(plotdf$val)) +
+  theme_black() +
+  theme(
+    #axis.text.y = element_blank(),
+    #axis.ticks.y = element_blank(),
+    legend.position='bottom',
+    legend.direction = 'horizontal'
+  )
+
+tmpname<-"fig_crimeDpun.pdf"
+gs.list[[tmpname]]<-list(
+  graph=g.tmp,
+  filename=tmpname,
+  width=8/1.5,
+  height=6/1.5
+)
+
+#new admissions per crime
+fulldf<-spread(fulldf,var,val)
+head(fulldf)
+fulldf$D.incrt2<-fulldf$adtott-fulldf$rltott
+cor(fulldf$D.incrt2,fulldf$D.incrt_t_jur,use='complete.obs') #0.96
+fulldf$admper<-100*fulldf$adtott/(fulldf$fbivcrt + fulldf$fbipcrt)
+
+#plot this
+plotdf<-fulldf
+g.tmp<-ggplot(
+  plotdf,
+  aes(
+    x=year,
+    y=admper
+  )
+) + 
+  geom_line(
+    size=2,
+    color=orange
+  ) +
+  xlab("") + 
+  ylab("Admissions Per 100 Crimes\n") +
+  theme_black()
+tmpname<-"fig_admissionspercrime.pdf"
+gs.list[[tmpname]]<-list(
+  graph=g.tmp,
+  filename=tmpname,
+  width=8/1.5,
+  height=6/1.5
+)
+
+#########################################################
+#########################################################
+# 
+# #show violence and crime, two paradigms
+# setwd(datadir); dir()
+# homdf<-read.csv(
+#   'homrates_ipolated.csv',
+#   stringsAsFactors=F
+# )
+# setwd(datadir)
+# pdf<-read.csv(
+#   'incrates_subnationalstate.csv',
+#   stringsAsFactors=F
+# )
+# tmp<-pdf$statename=="United States" &
+#   !is.na(pdf$statename)
+# pdf<-pdf[tmp,]
+# 
+# #combine
+# homdf$stat<-"homrate"
+# pdf$stat<-"incrate"
+# homdf<-homdf[,c("year","homrate","stat")]
+# pdf<-pdf[,c("year","incrt_t_jur","stat")]
+# names(homdf)<-names(pdf)<-c("year","val","stat")
+# tmpdf<-rbind.fill(
+#   homdf,
+#   pdf
+# )
+# 
+# #plot
+# loopdf<-data.frame(
+#   styr=c(1950,1980),
+#   endyr=c(1990,2020)
+# )
+# for(i in 1:nrow(loopdf)) {
+#   #<-1
+#   styr<-loopdf$styr[i]; endyr<-loopdf$endyr[i]
+#   tmp<-tmpdf$year>=styr & tmpdf$year<=endyr
+#   plotdf<-tmpdf[tmp,]
+#   plotdf<-by(plotdf,plotdf$stat,function(df) {
+#     df$val<-100 * df$val/df$val[df$year==styr]
+#     df
+#   }) %>% rbind.fill
+#   tmplevels<-c("incrate","homrate")
+#   tmplabels<-c("Incarceration Rate","Homicide Rate")
+#   plotdf$stat<-factor(
+#     plotdf$stat,
+#     tmplevels,
+#     tmplabels
+#   )
+#   tmpcolors_hat<-c(
+#     red,blue
+#   )
+#   names(tmpcolors_hat)<-levels(
+#     plotdf$stat
+#   )
+#   g.tmp<-ggplot(
+#     plotdf,
+#     aes(
+#       x=year,
+#       y=val,
+#       group=stat,
+#       color=stat
+#     )
+#   ) +
+#     geom_line(
+#       size=2
+#     ) +
+#     scale_color_manual(
+#       name="",
+#       values=tmpcolors_hat
+#     ) +
+#     xlab("") +
+#     ylab(paste0("Level (",styr,"=100)\n")) +
+#     theme_black() +
+#     theme(
+#       legend.position='bottom',
+#       legend.direction = 'horizontal',
+#       legend.text = element_text(size=8)
+#     )
+#   tmpname<-paste0("fig_paradigms_",styr,".pdf")
+#   gs.list[[tmpname]]<-list(
+#     graph=g.tmp,
+#     filename=tmpname,
+#     width=8/1.5,
+#     height=6/1.5
+#   )
+# }
+
+#########################################################
+#########################################################
+
+#costs of policy choices
+
+rootcauses<-2000 #this is half Kenworthy's estimate
+punitiveness<-250 
+laissezfaire<-2000/2
+abolition<-250/2
+
+q1<-abolition + rootcauses
+q2<-punitiveness + rootcauses
+q3<-punitiveness + laissezfaire
+q4<-abolition + laissezfaire
+
+#for squares in MSpaint, I want sqrt of this
+round(sapply(c(q1,q2,q3,q4),sqrt)) * 10
+
+tmpdf<-data.frame(
+  matrix(
+    c(q1,abolition,rootcauses,
+      q2,punitiveness,rootcauses,
+      q3,punitiveness,laissezfaire,
+      q4,abolition,laissezfaire),
+    ncol=3,byrow=T
+  )
+)
+names(tmpdf)<-c("total","penal","social")
+tmpdf$option<-c("I","II","III","IV")
+tmpdf<-gather(
+  tmpdf,
+  type,
+  amount,
+  penal:social
+)
+
+tmplevels<-c(
+  "penal",
+  "social"
+)
+tmplabels<-c(
+  "Penal",
+  "Social"
+)
+tmpdf$type<-factor(
+  tmpdf$type,
+  tmplevels,
+  tmplabels
+)
+
+tmpcolors_desk<-c(
+  red,blue
+)
+names(tmpcolors_desk)<-levels(tmpdf$type)
+
+plotdf<-tmpdf
+plotdf$amount[plotdf$option%in%c("I","II","IV")]<-NA
+
+#without option 1,2,4
+g.tmp<-ggplot(
+  plotdf,
+  aes(
+    x=option,
+    y=amount,
+    group=type,
+    color=type,
+    fill=type
+  )
+) +
+  geom_bar(
+    stat='identity',
+    width=0.3
+  ) +
+  scale_color_manual(
+    name="",
+    values=tmpcolors_desk
+  ) +
+  scale_fill_manual(
+    name="",
+    values=tmpcolors_desk
+  ) +
+  xlab("\nQuadrant") + 
+  ylab("Estimated Cost in Billions\n") +
+  theme_black() +
+  ylim(0,2500) +
+  theme(
+    legend.position = 'top',
+    legend.direction = 'horizontal'
+  )
+
+tmpname<-"fig_estcost.pdf"
+gs.list[[tmpname]]<-list(
+  graph=g.tmp,
+  filename=tmpname,
+  width=8/1.5,
+  height=6/1.5
+)
+
+plotdf<-tmpdf
+g.tmp<-ggplot(
+  plotdf,
+  aes(
+    x=option,
+    y=amount,
+    group=type,
+    color=type,
+    fill=type
+  )
+) +
+  geom_bar(
+    stat='identity',
+    width=0.3
+  ) +
+  scale_color_manual(
+    name="",
+    values=tmpcolors_desk
+  ) +
+  scale_fill_manual(
+    name="",
+    values=tmpcolors_desk
+  ) +
+  xlab("\nQuadrant") + 
+  ylab("Estimated Cost in Billions\n") +
+  ylim(0,2500) + 
+  theme_black() +
+  theme(
+    legend.position = 'top',
+    legend.direction = 'horizontal'
+  )
+
+tmpname<-"fig_estcost_filled.pdf"
+gs.list[[tmpname]]<-list(
+  graph=g.tmp,
+  filename=tmpname,
+  width=8/1.5,
+  height=6/1.5
+)
+
+
+plotdf<-tmpdf
+g.tmp<-ggplot(
+  plotdf,
+  aes(
+    x=option,
+    y=amount,
+    group=type
+  )
+) +
+  geom_bar(
+    stat='identity',
+    width=0.3,
+    color=orange,
+    fill=orange
+  ) +
+  xlab("\nQuadrant") + 
+  ylab("Estimated Cost in Billions\n") +
+  ylim(0,2500) + 
+  theme_black() +
+  theme(
+    legend.position = 'top',
+    legend.direction = 'horizontal'
+  )
+
+tmpname<-"fig_estcost_filled_orange.pdf"
+gs.list[[tmpname]]<-list(
+  graph=g.tmp,
+  filename=tmpname,
+  width=8/1.5,
+  height=6/1.5
+)
+
+#########################################################
+#########################################################
+
+#make whole pie calculations
+setwd(datadir); dir()
+tmpdf<-read.csv(
+  'thewholepie.csv',
+  stringsAsFactors=F
+)
+
+#make unique
+tmpdf<-data.table(tmpdf)
+tmpdf<-tmpdf[
+  ,
+  .(number=sum(number)),
+  by=c(
+    "type",
+    "crime"
+  )
+  ]
+
+#get drugs vs. other #
+tmp<-tmpdf$type=="state"
+stnum<-sum(tmpdf$number[tmp])
+tmp<-tmpdf$type=="federal"
+fednum<-sum(tmpdf$number[tmp])
+tmp<-tmpdf$type=="jails"
+locnum<-sum(tmpdf$number[tmp])
+
+tmp<-tmpdf$type=="federal" & tmpdf$crime=="drugs"
+fed_drugnum<-tmpdf$number[tmp]
+tmp<-tmpdf$type=="state" & tmpdf$crime=="drugs"
+st_drugnum<-tmpdf$number[tmp]
+tmp<-tmpdf$type=="jails" & tmpdf$crime=="drugs"
+loc_drugnum<-tmpdf$number[tmp]
+
+#drugpop
+drugpop<-fed_drugnum + st_drugnum + loc_drugnum
+
+#prispop
+totpop<-stnum + fednum + locnum
+
+#pop who are truly lowlevel
+ll_fprop<-0.016 #fed
+ll_sprop<-0.057 #st
+ll_jprop<-1 #assume all of jail are lowlebel
+ll_drugpop<-ll_fprop * fed_drugnum + 
+  ll_sprop * st_drugnum + 
+  ll_jprop * loc_drugnum
+
+#calc proportions 
+drugprop<-drugpop/totpop
+ll_drugprop<-ll_drugpop/totpop
+
+#pixels
+pixels<-1200
+pixels * drugprop #drugs
+pixels * ll_drugprop #lldrugs
+
+#calc proportions violent, property
+100 * tapply(tmpdf$number,tmpdf$crime,function(x) sum(x)/sum(tmpdf$number))
+#44% violent, 20% property
+
+#########################################################
+#########################################################
+
+#output graphlist
+setwd(outputdir)
+this.sequence<-seq_along(gs.list)
+for(i in this.sequence) {
+  print(
+    paste0(
+      "saving ",i," of ",length(this.sequence)
+    )
+  )
+  thiselement<-gs.list[[i]]
+  ggsave(
+    filename="tmp.pdf",
+    plot=thiselement$graph,
+    width=thiselement$width,
+    height=thiselement$height
+  )
+  #embed font
+  embed_fonts(
+    file="tmp.pdf",
+    outfile=thiselement$filename
+  )
+  file.remove(
+    "tmp.pdf"
+  )
+  Sys.sleep(1)
+}

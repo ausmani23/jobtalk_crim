@@ -1,0 +1,21 @@
+type,crime,number
+state,public order,152
+state,drugs,200
+state,property,237
+state,violent,718
+federal,drugs,82
+federal,violent,13
+federal,property,11
+federal,other,1
+federal,other,20
+federal,drugs,18
+federal,immigration,13
+jails,violent,147
+jails,property,116
+jails,drugs,118
+jails,drugs,81
+jails,other,3
+jails,violent,32
+jails,property,37
+jails,drugs,35
+jails,public order,46
