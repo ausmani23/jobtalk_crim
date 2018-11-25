@@ -1,0 +1,11 @@
+# folders
+text/
+files/
+output/
+
+# files
+data/incrates_counties.csv
+data/incrates_subnationalstate.csv
+data/ncvs
+data/nlsy
+data/raw
